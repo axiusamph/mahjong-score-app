@@ -8,32 +8,27 @@ if 'game_history' not in st.session_state:
     st.session_state.game_history = []
 
 def calculate_rating(rank, score, okka, uma_n, uma_m):
-    base = score / 1000
-    
-    # 오카 처리
+    # 오카 보정 처리
     if okka == "있음":
-        score -= 30000
-        if rank == 1:
-            score += 20000
+        first_bonus = 20000
+        returning_score = 30000
     elif okka == "없음":
-        score -= 25000  # 오카가 없을 경우 모든 플레이어의 점수에서 25,000을 뺌
-    
-    # 우마 처리
-    if rank == 3 and uma_n != 0:
-        score += uma_n
-    elif rank == 4 and uma_m != 0:
-        score += uma_m
-    
-    # 승점 계산
+        first_bonus = 0
+        returning_score = 25000
+
+    # 기본 승점 계산 (오카 보정이 끝난 후 계산)
     if rank == 1:
-        return base + 20 + score / 1000
+        rating = (score + first_bonus - returning_score) / 1000 + uma_m
     elif rank == 2:
-        return base - 20 + score / 1000
+        rating = (score - returning_score) / 1000 + uma_n
     elif rank == 3:
-        return base - 40 + score / 1000
+        rating = (score - returning_score) / 1000 - uma_n
     elif rank == 4:
-        return base - 60 + score / 1000
-    return base
+        rating = (score - returning_score) / 1000 - uma_m
+    else:
+        rating = score / 1000
+    
+    return rating
 
 st.title("🀄 마작 승점 계산기")
 st.markdown("4명 게임 기준, 점수와 순위를 기반으로 승점을 자동 계산합니다.")
