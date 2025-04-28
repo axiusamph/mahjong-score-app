@@ -36,8 +36,9 @@ st.markdown("4명 게임 기준, 점수와 순위를 기반으로 승점을 자�
 # 새 게임 입력을 위한 UI
 with st.form("game_form"):
     st.subheader("🎮 새 게임 입력")
+    
     # 오카 및 우마 설정
-    okka = st.selectbox("오카 설정", options=["없음", "있음"])
+    okka = st.selectbox("오카 설정", options=["있음", "없음"], index=0)  # 기본값을 "있음"으로 설정
     uma_n = st.number_input("3등에게 주는 승점 (N)", min_value=0, max_value=1000, value=10)
     uma_m = st.number_input("1등에게 주는 승점 (M)", min_value=0, max_value=1000, value=30)
 
@@ -53,13 +54,11 @@ with st.form("game_form"):
         names.append(name)
         scores.append(score)
     
-    # 점수 합산 후 4등 점수 자동 계산
-    total_score = sum(scores)
-    score_4th = 100000 - total_score
-    names.append("4등 플레이어")  # 4등 플레이어 추가
-    scores.append(score_4th)  # 4등 점수 자동 입력
+    # 4등 점수 수동 입력
+    score_4th = st.number_input("4등 점수", step=100, min_value=0, max_value=100000 - sum(scores), value=100000 - sum(scores))
 
-    st.write(f"4등 점수는 자동으로 계산되어 {score_4th}로 설정됩니다.")
+    names.append("4등 플레이어")  # 4등 플레이어 추가
+    scores.append(score_4th)  # 4등 점수 수동 입력
 
     submitted = st.form_submit_button("게임 결과 저장")
 
