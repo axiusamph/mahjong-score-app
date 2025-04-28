@@ -82,12 +82,18 @@ if submitted:
 # 누적 승점 출력
 if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
+    
+    # 누적 승점을 기준으로 순위 매기기
     df = pd.DataFrame([
         {"이름": name, "누적 승점": round(data["rating"], 2)}
         for name, data in st.session_state.players.items()
     ])
-    df = df.sort_values(by="누적 승점", ascending=False)
-    st.dataframe(df, use_container_width=True)
+    
+    # 승점을 기준으로 내림차순 정렬하고 순위 매기기
+    df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
+    df['순위'] = df.index + 1  # 순위 추가 (1부터 시작)
+
+    st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
 
 # 역대 게임 결과 확인
 if st.session_state.game_history:
