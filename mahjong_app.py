@@ -42,10 +42,10 @@ with st.form("game_form"):
     uma_n = st.number_input("3등에게 주는 승점 (N)", min_value=0, max_value=1000, value=10)
     uma_m = st.number_input("1등에게 주는 승점 (M)", min_value=0, max_value=1000, value=30)
 
-    # 플레이어 점수 입력
+    # 플레이어 점수 입력 (4등까지 입력)
     names = []
     scores = []
-    for i in range(3):
+    for i in range(4):  # 4명의 플레이어 점수 입력
         col1, col2 = st.columns(2)
         with col1:
             name = st.text_input(f"{i+1}등 플레이어 이름", key=f"name_{i}")
@@ -53,12 +53,6 @@ with st.form("game_form"):
             score = st.number_input(f"{i+1}등 점수", key=f"score_{i}", step=100)
         names.append(name)
         scores.append(score)
-    
-    # 4등 점수 수동 입력
-    score_4th = st.number_input("4등 점수", step=100, min_value=0, max_value=100000 - sum(scores), value=100000 - sum(scores))
-
-    names.append("4등 플레이어")  # 4등 플레이어 추가
-    scores.append(score_4th)  # 4등 점수 수동 입력
 
     submitted = st.form_submit_button("게임 결과 저장")
 
