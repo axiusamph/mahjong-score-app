@@ -39,8 +39,8 @@ with st.form("game_form"):
     
     # 오카 및 우마 설정
     okka = st.selectbox("오카 설정", options=["있음", "없음"], index=0)  # 기본값을 "있음"으로 설정
-    uma_n = st.number_input("3등에게 주는 승점 (N)", min_value=0, max_value=1000, value=10)
-    uma_m = st.number_input("1등에게 주는 승점 (M)", min_value=0, max_value=1000, value=30)
+    uma_n = st.number_input("3등에게 주는 승점 (N)", value=10)  # 우마 N에 대한 제한 제거
+    uma_m = st.number_input("1등에게 주는 승점 (M)", value=30)  # 우마 M에 대한 제한 제거
 
     # 플레이어 점수 입력 (4등까지 입력)
     names = []
@@ -81,11 +81,9 @@ if submitted:
 
 # 누적 승점 출력
 if st.session_state.players:
-    st.subheader("📊 누적 결과")
+    st.subheader("📊 누적 승점 결과")
     df = pd.DataFrame([
-        {"이름": name,
-         "누적 점수": data["score"],
-         "누적 승점": round(data["rating"], 2)}
+        {"이름": name, "누적 승점": round(data["rating"], 2)}
         for name, data in st.session_state.players.items()
     ])
     df = df.sort_values(by="누적 승점", ascending=False)
