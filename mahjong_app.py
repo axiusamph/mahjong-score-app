@@ -33,23 +33,33 @@ def calculate_rating(rank, score, okka, uma_n, uma_m):
 st.title("🀄 마작 승점 계산기")
 st.markdown("4명 게임 기준, 점수와 순위를 기반으로 승점을 자동 계산합니다.")
 
-# 오카 및 우마 설정
-okka = st.selectbox("오카 설정", options=["없음", "있음"])
-uma_n = st.number_input("3등에게 주는 승점 (N)", min_value=0, max_value=1000, value=10)
-uma_m = st.number_input("1등에게 주는 승점 (M)", min_value=0, max_value=1000, value=30)
-
+# 새 게임 입력을 위한 UI
 with st.form("game_form"):
     st.subheader("🎮 새 게임 입력")
+    # 오카 및 우마 설정
+    okka = st.selectbox("오카 설정", options=["없음", "있음"])
+    uma_n = st.number_input("3등에게 주는 승점 (N)", min_value=0, max_value=1000, value=10)
+    uma_m = st.number_input("1등에게 주는 승점 (M)", min_value=0, max_value=1000, value=30)
+
+    # 플레이어 점수 입력
     names = []
     scores = []
-    for i in range(4):
+    for i in range(3):
         col1, col2 = st.columns(2)
         with col1:
-            name = st.text_input(f"{i+1}번 플레이어 이름", key=f"name_{i}")
+            name = st.text_input(f"{i+1}등 플레이어 이름", key=f"name_{i}")
         with col2:
-            score = st.number_input(f"{i+1}번 점수", key=f"score_{i}", step=1000)
+            score = st.number_input(f"{i+1}등 점수", key=f"score_{i}", step=100)
         names.append(name)
         scores.append(score)
+    
+    # 점수 합산 후 4등 점수 자동 계산
+    total_score = sum(scores)
+    score_4th = 100000 - total_score
+    names.append("4등 플레이어")  # 4등 플레이어 추가
+    scores.append(score_4th)  # 4등 점수 자동 입력
+
+    st.write(f"4등 점수는 자동으로 계산되어 {score_4th}로 설정됩니다.")
 
     submitted = st.form_submit_button("게임 결과 저장")
 
@@ -76,14 +86,6 @@ if submitted:
 
     st.success("✅ 게임 결과가 저장되었습니다.")
 
-# 역대 게임 결과 확인
-if st.session_state.game_history:
-    st.subheader("📜 역대 게임 결과")
-    for game_idx, game in enumerate(st.session_state.game_history):
-        st.write(f"### 게임 {game_idx + 1}")
-        df = pd.DataFrame(game)
-        st.dataframe(df, use_container_width=True)
-
 # 누적 승점 출력
 if st.session_state.players:
     st.subheader("📊 누적 결과")
@@ -95,6 +97,14 @@ if st.session_state.players:
     ])
     df = df.sort_values(by="누적 승점", ascending=False)
     st.dataframe(df, use_container_width=True)
+
+# 역대 게임 결과 확인
+if st.session_state.game_history:
+    st.subheader("📜 역대 게임 결과")
+    for game_idx, game in enumerate(st.session_state.game_history):
+        st.write(f"### 게임 {game_idx + 1}")
+        df = pd.DataFrame(game)
+        st.dataframe(df, use_container_width=True)
 
 # 초기화 옵션
 if st.button("🔁 모든 기록 초기화"):
