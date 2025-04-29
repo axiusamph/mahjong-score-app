@@ -55,7 +55,7 @@ def reload_game_history():
             st.session_state.players[name]['score'] += score
             st.session_state.players[name]['rating'] += rating
 
-# 첫 로드 시, 게임 기록을 시트에서 불러오고 세션 상태에 저장
+# 처음 로드 시 시트에서 데이터를 불러오기
 if 'game_history' not in st.session_state:
     reload_game_history()
 
@@ -118,8 +118,7 @@ if submitted:
     # 게임 결과를 시트에 저장
     save_game_to_sheet(game_result, len(st.session_state.game_history) + 1)
 
-    # 세션에 게임 기록 추가 후 다시 로드
-    st.session_state.game_history.append(game_result)
+    # 게임 기록 업데이트 후 새로 고침
     reload_game_history()  # 세션에 업데이트된 데이터를 새로 로드
 
     st.success("✅ 게임 결과가 저장되었습니다.")
