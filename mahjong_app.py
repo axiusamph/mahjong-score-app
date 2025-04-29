@@ -110,6 +110,10 @@ with st.form("game_form"):
     submitted = st.form_submit_button("게임 결과 저장")
 
 if submitted:
+    # 만약 players가 없으면 초기화
+    if 'players' not in st.session_state:
+        st.session_state.players = {}
+
     game_data = sorted(zip(names, scores), key=lambda x: x[1], reverse=True)
 
     game_result = []
