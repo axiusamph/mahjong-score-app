@@ -15,15 +15,23 @@ sheet = client.open(SHEET_NAME).sheet1
 
 # 유틸: 구글 시트에서 기존 데이터 불러오기
 def load_game_history():
-    records = sheet.get_all_records()
-    history = []
-    for r in records:
-        try:
-            game_data = ast.literal_eval(r['game'])  # 문자열 → 리스트(dict)
-            history.append(game_data)
-        except:
-            pass
-    return history
+    try:
+        records = sheet.get_all_records()
+        if records:
+            st.write("Records loaded:", records)  # 시트에서 가져온 데이터를 확인
+        else:
+            st.write("No records found.")
+        history = []
+        for r in records:
+            try:
+                game_data = ast.literal_eval(r['game'])  # 문자열 → 리스트(dict)
+                history.append(game_data)
+            except:
+                pass
+        return history
+    except Exception as e:
+        st.write(f"Error loading records: {e}")
+        return []
 
 # 유틸: 게임 결과 저장
 def save_game_to_sheet(game_result, game_id):
