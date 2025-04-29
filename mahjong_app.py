@@ -49,7 +49,7 @@ def get_next_game_id():
         max_game_id = max([record['game_id'] for record in records])
         return max_game_id + 1
 
-# 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
+# 세션을 새로 고침 시, 시트에서 데이터를 불러오는 로직
 def reload_game_history():
     st.session_state.game_history = load_game_history()
     if 'players' not in st.session_state:  # 세션에 players가 없다면 초기화
