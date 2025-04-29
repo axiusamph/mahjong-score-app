@@ -39,20 +39,21 @@ def save_game_to_sheet(game_result, game_id):
         # 각 플레이어 정보를 새로운 행으로 기록
         sheet.append_row([game_id, str(game_result), player_name, player_score, player_rank, player_rating, timestamp])
 
-# 시트에서 기존 게임 기록 불러오기 (세션 상태 사용 안 함)
-game_history = load_game_history()
-players = {}
-
-# 누적 계산
-for game in game_history:
-    for entry in game:
-        name = entry['name']
-        score = entry['score']
-        rating = entry['rating']
-        if name not in players:
-            players[name] = {'score': 0, 'rating': 0}
-        players[name]['score'] += score
-        players[name]['rating'] += rating
+# 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
+if 'game_history' not in st.session_state:
+    # 게임 기록을 시트에서 불러오고 세션 상태에 저장
+    st.session_state.game_history = load_game_history()
+    st.session_state.players = {}
+    # 누적 계산
+    for game in st.session_state.game_history:
+        for entry in game:
+            name = entry['name']
+            score = entry['score']
+            rating = entry['rating']
+            if name not in st.session_state.players:
+                st.session_state.players[name] = {'score': 0, 'rating': 0}
+            st.session_state.players[name]['score'] += score
+            st.session_state.players[name]['rating'] += rating
 
 # 계산 함수
 def calculate_rating(rank, score, okka, uma_n, uma_m):
@@ -104,39 +105,37 @@ if submitted:
     game_result = []
     for rank, (name, score) in enumerate(game_data, 1):
         rating = calculate_rating(rank, score, okka, uma_n, uma_m)
-        if name not in players:
-            players[name] = {'score': 0, 'rating': 0}
-        players[name]['score'] += score
-        players[name]['rating'] += rating
+        if name not in st.session_state.players:
+            st.session_state.players[name] = {'score': 0, 'rating': 0}
+        st.session_state.players[name]['score'] += score
+        st.session_state.players[name]['rating'] += rating
         game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
-    # 게임 ID 할당 및 저장
-    game_id = len(game_history) + 1
-    game_history.append(game_result)
-    save_game_to_sheet(game_result, game_id)  # 게임 ID 전달
+    st.session_state.game_history.append(game_result)
+    save_game_to_sheet(game_result, len(st.session_state.game_history))
     st.success("✅ 게임 결과가 저장되었습니다.")
 
-# 누적 승점 출력 (항상 구글 시트에서 불러온 데이터를 사용)
-if players:
+# 누적 승점 출력
+if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
     df = pd.DataFrame([
         {"이름": name, "누적 승점": round(data["rating"], 2)}
-        for name, data in players.items()
+        for name, data in st.session_state.players.items()
     ])
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df["순위"] = df.index + 1
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
 
-# 게임 기록 출력 (항상 구글 시트에서 불러온 데이터를 사용)
-if game_history:
+# 게임 기록 출력
+if st.session_state.game_history:
     st.subheader("📜 역대 게임 결과")
-    for game_idx, game in enumerate(game_history):
+    for game_idx, game in enumerate(st.session_state.game_history):
         st.write(f"### 게임 {game_idx + 1}")
         df = pd.DataFrame(game)
         st.dataframe(df, use_container_width=True)
 
 # 초기화 기능 (시트는 초기화 안 함)
 if st.button("🔁 세션 초기화"):
-    players = {}
-    game_history = []
+    st.session_state.players = {}
+    st.session_state.game_history = []
     st.success("세션 데이터가 초기화되었습니다. (Google Sheets 데이터는 유지됩니다)")
