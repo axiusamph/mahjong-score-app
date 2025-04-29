@@ -55,6 +55,15 @@ def reload_game_history():
             st.session_state.players[name]['score'] += score
             st.session_state.players[name]['rating'] += rating
 
+# 게임 ID 계산 함수 (구글 시트의 마지막 게임 ID를 기준으로 계산)
+def get_next_game_id():
+    records = sheet.get_all_records()
+    if not records:  # 만약 기록이 없다면 game_id는 1로 설정
+        return 1
+    else:
+        max_game_id = max([record['game_id'] for record in records])
+        return max_game_id + 1
+
 # 처음 로드 시 시트에서 데이터를 불러오기
 if 'game_history' not in st.session_state:
     reload_game_history()
@@ -115,8 +124,11 @@ if submitted:
         st.session_state.players[name]['rating'] += rating
         game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
+    # 게임 ID 계산
+    game_id = get_next_game_id()
+
     # 게임 결과를 시트에 저장
-    save_game_to_sheet(game_result, len(st.session_state.game_history) + 1)
+    save_game_to_sheet(game_result, game_id)
 
     # 게임 기록 업데이트 후 새로 고침
     reload_game_history()  # 세션에 업데이트된 데이터를 새로 로드
