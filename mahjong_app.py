@@ -39,11 +39,20 @@ def save_game_to_sheet(game_result, game_id):
         # 각 플레이어 정보를 새로운 행으로 기록
         sheet.append_row([game_id, str(game_result), player_name, player_score, player_rank, player_rating, timestamp])
 
+# 게임 ID 계산 함수 (구글 시트의 마지막 게임 ID를 기준으로 계산)
+def get_next_game_id():
+    records = sheet.get_all_records()
+    if not records:  # 만약 기록이 없다면 game_id는 1로 설정
+        return 1
+    else:
+        # 'game_id'를 기준으로 최대값을 찾아서 새로운 게임 ID를 계산
+        max_game_id = max([record['game_id'] for record in records])
+        return max_game_id + 1
+
 # 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
 def reload_game_history():
     st.session_state.game_history = load_game_history()
     st.session_state.players = {}
-    
     # 누적 계산
     for game in st.session_state.game_history:
         for entry in game:
@@ -54,19 +63,6 @@ def reload_game_history():
                 st.session_state.players[name] = {'score': 0, 'rating': 0}
             st.session_state.players[name]['score'] += score
             st.session_state.players[name]['rating'] += rating
-
-# 게임 ID 계산 함수 (구글 시트의 마지막 게임 ID를 기준으로 계산)
-def get_next_game_id():
-    records = sheet.get_all_records()
-    if not records:  # 만약 기록이 없다면 game_id는 1로 설정
-        return 1
-    else:
-        max_game_id = max([record['game_id'] for record in records])
-        return max_game_id + 1
-
-# 처음 로드 시 시트에서 데이터를 불러오기
-if 'game_history' not in st.session_state:
-    reload_game_history()
 
 # 계산 함수
 def calculate_rating(rank, score, okka, uma_n, uma_m):
@@ -138,10 +134,10 @@ if submitted:
 # 누적 승점 출력
 if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
-    df = pd.DataFrame([{
-        "이름": name,
-        "누적 승점": round(data["rating"], 2)
-    } for name, data in st.session_state.players.items()])
+    df = pd.DataFrame([ 
+        {"이름": name, "누적 승점": round(data["rating"], 2)}
+        for name, data in st.session_state.players.items()
+    ])
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df["순위"] = df.index + 1
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
@@ -156,5 +152,6 @@ if st.session_state.game_history:
 
 # 초기화 기능 (시트는 초기화 안 함)
 if st.button("🔁 세션 초기화"):
-    reload_game_history()  # 구글 시트에서 데이터를 다시 불러옴
+    st.session_state.players = {}
+    st.session_state.game_history = []
     st.success("세션 데이터가 초기화되었습니다. (Google Sheets 데이터는 유지됩니다)")
