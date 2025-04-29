@@ -52,7 +52,7 @@ def get_next_game_id():
 # 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
 def reload_game_history():
     st.session_state.game_history = load_game_history()
-    st.session_state.players = {}
+    st.session_state.players = {}  # 초기화가 필요한 경우 빈 딕셔너리로 초기화
     # 누적 계산
     for game in st.session_state.game_history:
         for entry in game:
@@ -132,7 +132,7 @@ if submitted:
     st.success("✅ 게임 결과가 저장되었습니다.")
 
 # 누적 승점 출력
-if st.session_state.players:
+if 'players' in st.session_state and st.session_state.players:
     st.subheader("📊 누적 승점 결과")
     df = pd.DataFrame([ 
         {"이름": name, "누적 승점": round(data["rating"], 2)}
@@ -143,7 +143,7 @@ if st.session_state.players:
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
 
 # 게임 기록 출력
-if st.session_state.game_history:
+if 'game_history' in st.session_state and st.session_state.game_history:
     st.subheader("📜 역대 게임 결과")
     for game_idx, game in enumerate(st.session_state.game_history):
         st.write(f"### 게임 {game_idx + 1}")
