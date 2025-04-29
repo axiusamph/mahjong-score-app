@@ -30,19 +30,22 @@ def save_game_to_sheet(game_result, game_id):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # 각 플레이어 정보 저장
-    for player in game_result:
+    for i, player in enumerate(game_result):
         player_name = player['name']
         player_score = player['score']
         player_rank = player['rank']
         player_rating = player['rating']
         
         # 각 플레이어 정보를 새로운 행으로 기록
-        sheet.append_row([game_id, player_name, player_score, player_rank, player_rating, timestamp])
-
+        sheet.append_row([game_id, str(game_result), player_name, player_score, player_rank, player_rating, timestamp])
+        
 # 시트에서 기존 게임 기록 불러오기
 if 'game_history' not in st.session_state:
     st.session_state.game_history = load_game_history()
     st.session_state.players = {}
+    # 게임 ID 초기화 (게임 기록이 없을 경우)
+    if 'game_id' not in st.session_state:
+        st.session_state.game_id = 1  # 첫 게임의 ID를 1로 설정
     # 누적 계산
     for game in st.session_state.game_history:
         for entry in game:
@@ -110,12 +113,9 @@ if submitted:
         st.session_state.players[name]['rating'] += rating
         game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
-    # 게임 ID 설정
-    game_id = st.session_state.game_id
-    st.session_state.game_id += 1  # 다음 게임 ID로 증가
-
     st.session_state.game_history.append(game_result)
-    save_game_to_sheet(game_result, game_id)
+    save_game_to_sheet(game_result, st.session_state.game_id)  # 게임 ID 전달
+    st.session_state.game_id += 1  # 다음 게임 ID 증가
     st.success("✅ 게임 결과가 저장되었습니다.")
 
 # 누적 승점 출력
@@ -141,4 +141,5 @@ if st.session_state.game_history:
 if st.button("🔁 세션 초기화"):
     st.session_state.players = {}
     st.session_state.game_history = []
+    st.session_state.game_id = 1  # 게임 ID 초기화
     st.success("세션 데이터가 초기화되었습니다. (Google Sheets 데이터는 유지됩니다)")
