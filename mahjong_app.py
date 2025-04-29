@@ -26,8 +26,18 @@ def load_game_history():
     return history
 
 # 유틸: 게임 결과 저장
-def save_game_to_sheet(game_result):
-    sheet.append_row([str(game_result), datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+def save_game_to_sheet(game_result, game_id):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # 각 플레이어 정보 저장
+    for i, player in enumerate(game_result):
+        player_name = player['name']
+        player_score = player['score']
+        player_rank = player['rank']
+        player_rating = player['rating']
+        
+        # 각 플레이어 정보를 새로운 행으로 기록
+        sheet.append_row([game_id, str(game_result), player_name, player_score, player_rank, player_rating, timestamp])
 
 # 시트에서 기존 게임 기록 불러오기
 if 'game_history' not in st.session_state:
