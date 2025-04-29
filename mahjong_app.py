@@ -13,9 +13,6 @@ credentials = Credentials.from_service_account_info(creds_dict, scopes=SCOPE)
 client = gspread.authorize(credentials)
 sheet = client.open(SHEET_NAME).sheet1
 
-# 비밀번호 설정
-CORRECT_PASSWORD = "0916"
-
 # 유틸: 구글 시트에서 기존 데이터 불러오기
 def load_game_history():
     records = sheet.get_all_records()
@@ -31,11 +28,13 @@ def load_game_history():
 # 유틸: 게임 결과 저장
 def save_game_to_sheet(game_result, game_id):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    # 게임 결과를 시트에 저장
+    
+    # 각 플레이어 정보 저장
     sheet.append_row([game_id, str(game_result), timestamp])
 
 # 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
 if 'game_history' not in st.session_state:
+    # 게임 기록을 시트에서 불러오고 세션 상태에 저장
     st.session_state.game_history = load_game_history()
     st.session_state.players = {}
     # 누적 계산
@@ -73,10 +72,7 @@ def calculate_rating(rank, score, okka, uma_n, uma_m):
 st.title("🀄 마작 승점 계산기")
 st.markdown("4명 게임 기준, 점수와 순위를 기반으로 승점을 자동 계산합니다.")
 
-# 비밀번호 입력 받기
-password = st.text_input("비밀번호를 입력하세요", type="password")
-
-# 새 게임 입력을 위한 UI
+# 새 게임 입력
 with st.form("game_form"):
     st.subheader("🎮 새 게임 입력")
 
@@ -96,7 +92,7 @@ with st.form("game_form"):
 
     submitted = st.form_submit_button("게임 결과 저장")
 
-if submitted and password == CORRECT_PASSWORD:
+if submitted:
     # 게임 결과 계산
     game_data = sorted(zip(names, scores), key=lambda x: x[1], reverse=True)
 
@@ -119,8 +115,6 @@ if submitted and password == CORRECT_PASSWORD:
     save_game_to_sheet(game_result, game_id)
     
     st.success("✅ 게임 결과가 저장되었습니다.")
-elif submitted and password != CORRECT_PASSWORD:
-    st.error("❌ 비밀번호가 틀렸습니다.")
 
 # 누적 승점 출력
 if st.session_state.players:
@@ -140,9 +134,3 @@ if st.session_state.game_history:
         st.write(f"### 게임 {game_idx + 1}")
         df = pd.DataFrame(game)
         st.dataframe(df, use_container_width=True)
-
-# 초기화 기능 (시트는 초기화 안 함)
-if st.button("🔁 세션 초기화"):
-    st.session_state.players = {}
-    st.session_state.game_history = []
-    st.success("세션 데이터가 초기화되었습니다. (Google Sheets 데이터는 유지됩니다)")
