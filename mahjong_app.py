@@ -15,28 +15,15 @@ sheet = client.open(SHEET_NAME).sheet1
 
 # 유틸: 구글 시트에서 기존 데이터 불러오기
 def load_game_history():
-    try:
-        records = sheet.get_all_records()
-        if records:
-            st.write("Records loaded:", records)  # 시트에서 가져온 데이터를 확인
-        else:
-            st.write("No records found.")
-        history = []
-        for r in records:
-            try:
-                game_data_str = r['game_result']  # 시트에서 가져온 문자열
-                st.write(f"Game result string: {game_data_str}")  # 게임 결과 문자열 확인
-                game_data = ast.literal_eval(game_data_str)  # 문자열 → 리스트(dict)
-                st.write(f"Parsed game data: {game_data}")  # 파싱된 결과 확인
-                history.append(game_data)
-            except Exception as e:
-                st.write(f"Error parsing game result: {e}")
-                pass
-        return history
-    except Exception as e:
-        st.write(f"Error loading records: {e}")
-        return []
-
+    records = sheet.get_all_records()
+    history = []
+    for r in records:
+        try:
+            game_data = ast.literal_eval(r['game'])  # 문자열 → 리스트(dict)
+            history.append(game_data)
+        except:
+            pass
+    return history
 
 # 유틸: 게임 결과 저장
 def save_game_to_sheet(game_result, game_id):
@@ -131,10 +118,10 @@ if submitted:
 # 누적 승점 출력
 if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
-    df = pd.DataFrame([
-        {"이름": name, "누적 승점": round(data["rating"], 2)}
-        for name, data in st.session_state.players.items()
-    ])
+    df = pd.DataFrame([{
+        "이름": name,
+        "누적 승점": round(data["rating"], 2)
+    } for name, data in st.session_state.players.items()])
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df["순위"] = df.index + 1
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
