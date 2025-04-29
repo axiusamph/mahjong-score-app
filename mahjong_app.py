@@ -116,7 +116,7 @@ if submitted:
     save_game_to_sheet(game_result, game_id)  # 게임 ID 전달
     st.success("✅ 게임 결과가 저장되었습니다.")
 
-# 누적 승점 출력
+# 누적 승점 출력 (항상 구글 시트에서 불러온 데이터를 사용)
 if players:
     st.subheader("📊 누적 승점 결과")
     df = pd.DataFrame([
@@ -127,7 +127,7 @@ if players:
     df["순위"] = df.index + 1
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
 
-# 게임 기록 출력
+# 게임 기록 출력 (항상 구글 시트에서 불러온 데이터를 사용)
 if game_history:
     st.subheader("📜 역대 게임 결과")
     for game_idx, game in enumerate(game_history):
