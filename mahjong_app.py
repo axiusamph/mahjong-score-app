@@ -52,7 +52,8 @@ def get_next_game_id():
 # 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
 def reload_game_history():
     st.session_state.game_history = load_game_history()
-    st.session_state.players = {}  # 초기화가 필요한 경우 빈 딕셔너리로 초기화
+    if 'players' not in st.session_state:  # 세션에 players가 없다면 초기화
+        st.session_state.players = {}  # 빈 딕셔너리로 초기화
     # 누적 계산
     for game in st.session_state.game_history:
         for entry in game:
