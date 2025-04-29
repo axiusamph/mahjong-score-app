@@ -6,12 +6,12 @@ from datetime import datetime
 import ast
 
 # Google Sheets 설정
-SHEET_NAME = "mahjong_scores"
+SHEET_NAME = "mahjong_scores"  # 구글 시트 이름을 설정
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds_dict = st.secrets["gcp_service_account"]
+creds_dict = st.secrets["gcp_service_account"]  # Streamlit 비밀 정보에서 인증 정보 가져오기
 credentials = Credentials.from_service_account_info(creds_dict, scopes=SCOPE)
 client = gspread.authorize(credentials)
-sheet = client.open(SHEET_NAME).sheet1
+sheet = client.open(SHEET_NAME).sheet1  # 시트의 첫 번째 시트에 연결
 
 # 유틸: 구글 시트에서 기존 데이터 불러오기
 def load_game_history():
@@ -19,7 +19,7 @@ def load_game_history():
     history = []
     for r in records:
         try:
-            game_data = ast.literal_eval(r['game'])  # 문자열 → 리스트(dict)
+            game_data = ast.literal_eval(r['game'])  # 문자열 → 리스트(dict) 변환
             history.append(game_data)
         except:
             pass
@@ -29,20 +29,19 @@ def load_game_history():
 def save_game_to_sheet(game_result, game_id):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    # 각 플레이어 정보 저장
+    # 각 플레이어 정보를 새로운 행으로 기록
     for i, player in enumerate(game_result):
         player_name = player['name']
         player_score = player['score']
         player_rank = player['rank']
         player_rating = player['rating']
         
-        # 각 플레이어 정보를 새로운 행으로 기록
+        # 각 플레이어 정보를 시트에 추가
         sheet.append_row([game_id, str(game_result), player_name, player_score, player_rank, player_rating, timestamp])
 
-# 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
+# 세션 상태 초기화 (새로고침 시마다)
 if 'game_history' not in st.session_state:
-    # 게임 기록을 시트에서 불러오고 세션 상태에 저장
-    st.session_state.game_history = load_game_history()
+    st.session_state.game_history = load_game_history()  # 구글 시트에서 게임 기록 불러오기
     st.session_state.players = {}
     # 누적 계산
     for game in st.session_state.game_history:
@@ -100,7 +99,6 @@ with st.form("game_form"):
     submitted = st.form_submit_button("게임 결과 저장")
 
 if submitted:
-    # 게임 결과 계산
     game_data = sorted(zip(names, scores), key=lambda x: x[1], reverse=True)
 
     game_result = []
@@ -112,29 +110,19 @@ if submitted:
         st.session_state.players[name]['rating'] += rating
         game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
-    # 새로운 게임 기록 추가
     st.session_state.game_history.append(game_result)
-    
-    # 게임 ID 설정
-    game_id = len(st.session_state.game_history)
-
-    # 게임 결과를 시트에 저장
-    save_game_to_sheet(game_result, game_id)
-    
+    save_game_to_sheet(game_result, len(st.session_state.game_history))
     st.success("✅ 게임 결과가 저장되었습니다.")
 
 # 누적 승점 출력
 if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
-    df = pd.DataFrame([ 
-        {"이름": name, "누적 승점": round(data["rating"], 2)}
-        for name, data in st.session_state.players.items()
-    ])
+    df = pd.DataFrame([{"이름": name, "누적 승점": round(data["rating"], 2)} for name, data in st.session_state.players.items()])
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df["순위"] = df.index + 1
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
 
-# 게임 기록 출력
+# 역대 게임 결과 출력
 if st.session_state.game_history:
     st.subheader("📜 역대 게임 결과")
     for game_idx, game in enumerate(st.session_state.game_history):
