@@ -24,14 +24,19 @@ def load_game_history():
         history = []
         for r in records:
             try:
-                game_data = ast.literal_eval(r['game'])  # 문자열 → 리스트(dict)
+                game_data_str = r['game_result']  # 시트에서 가져온 문자열
+                st.write(f"Game result string: {game_data_str}")  # 게임 결과 문자열 확인
+                game_data = ast.literal_eval(game_data_str)  # 문자열 → 리스트(dict)
+                st.write(f"Parsed game data: {game_data}")  # 파싱된 결과 확인
                 history.append(game_data)
-            except:
+            except Exception as e:
+                st.write(f"Error parsing game result: {e}")
                 pass
         return history
     except Exception as e:
         st.write(f"Error loading records: {e}")
         return []
+
 
 # 유틸: 게임 결과 저장
 def save_game_to_sheet(game_result, game_id):
