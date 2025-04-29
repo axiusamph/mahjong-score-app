@@ -40,10 +40,10 @@ def save_game_to_sheet(game_result, game_id):
         sheet.append_row([game_id, str(game_result), player_name, player_score, player_rank, player_rating, timestamp])
 
 # 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
-if 'game_history' not in st.session_state:
-    # 게임 기록을 시트에서 불러오고 세션 상태에 저장
+def reload_game_history():
     st.session_state.game_history = load_game_history()
     st.session_state.players = {}
+    
     # 누적 계산
     for game in st.session_state.game_history:
         for entry in game:
@@ -54,6 +54,10 @@ if 'game_history' not in st.session_state:
                 st.session_state.players[name] = {'score': 0, 'rating': 0}
             st.session_state.players[name]['score'] += score
             st.session_state.players[name]['rating'] += rating
+
+# 첫 로드 시, 게임 기록을 시트에서 불러오고 세션 상태에 저장
+if 'game_history' not in st.session_state:
+    reload_game_history()
 
 # 계산 함수
 def calculate_rating(rank, score, okka, uma_n, uma_m):
@@ -111,8 +115,13 @@ if submitted:
         st.session_state.players[name]['rating'] += rating
         game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
+    # 게임 결과를 시트에 저장
+    save_game_to_sheet(game_result, len(st.session_state.game_history) + 1)
+
+    # 세션에 게임 기록 추가 후 다시 로드
     st.session_state.game_history.append(game_result)
-    save_game_to_sheet(game_result, len(st.session_state.game_history))
+    reload_game_history()  # 세션에 업데이트된 데이터를 새로 로드
+
     st.success("✅ 게임 결과가 저장되었습니다.")
 
 # 누적 승점 출력
@@ -136,6 +145,5 @@ if st.session_state.game_history:
 
 # 초기화 기능 (시트는 초기화 안 함)
 if st.button("🔁 세션 초기화"):
-    st.session_state.players = {}
-    st.session_state.game_history = []
+    reload_game_history()  # 구글 시트에서 데이터를 다시 불러옴
     st.success("세션 데이터가 초기화되었습니다. (Google Sheets 데이터는 유지됩니다)")
