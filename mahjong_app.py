@@ -39,21 +39,11 @@ def save_game_to_sheet(game_result, game_id):
         # 각 플레이어 정보를 새로운 행으로 기록
         sheet.append_row([game_id, str(game_result), player_name, player_score, player_rank, player_rating, timestamp])
 
-# 게임 ID 계산 함수 (구글 시트의 마지막 게임 ID를 기준으로 계산)
-def get_next_game_id():
-    records = sheet.get_all_records()
-    if not records:  # 만약 기록이 없다면 game_id는 1로 설정
-        return 1
-    else:
-        # 'game_id'를 기준으로 최대값을 찾아서 새로운 게임 ID를 계산
-        max_game_id = max([record['game_id'] for record in records])
-        return max_game_id + 1
-
-# 세션을 새로 고침 시, 시트에서 데이터를 불러오는 로직
-def reload_game_history():
+# 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
+if 'game_history' not in st.session_state:
+    # 게임 기록을 시트에서 불러오고 세션 상태에 저장
     st.session_state.game_history = load_game_history()
-    if 'players' not in st.session_state:  # 세션에 players가 없다면 초기화
-        st.session_state.players = {}  # 빈 딕셔너리로 초기화
+    st.session_state.players = {}
     # 누적 계산
     for game in st.session_state.game_history:
         for entry in game:
@@ -110,10 +100,7 @@ with st.form("game_form"):
     submitted = st.form_submit_button("게임 결과 저장")
 
 if submitted:
-    # 만약 players가 없으면 초기화
-    if 'players' not in st.session_state:
-        st.session_state.players = {}
-
+    # 게임 결과 계산
     game_data = sorted(zip(names, scores), key=lambda x: x[1], reverse=True)
 
     game_result = []
@@ -125,19 +112,19 @@ if submitted:
         st.session_state.players[name]['rating'] += rating
         game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
-    # 게임 ID 계산
-    game_id = get_next_game_id()
+    # 새로운 게임 기록 추가
+    st.session_state.game_history.append(game_result)
+    
+    # 게임 ID 설정
+    game_id = len(st.session_state.game_history)
 
     # 게임 결과를 시트에 저장
     save_game_to_sheet(game_result, game_id)
-
-    # 게임 기록 업데이트 후 새로 고침
-    reload_game_history()  # 세션에 업데이트된 데이터를 새로 로드
-
+    
     st.success("✅ 게임 결과가 저장되었습니다.")
 
 # 누적 승점 출력
-if 'players' in st.session_state and st.session_state.players:
+if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
     df = pd.DataFrame([ 
         {"이름": name, "누적 승점": round(data["rating"], 2)}
@@ -148,7 +135,7 @@ if 'players' in st.session_state and st.session_state.players:
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
 
 # 게임 기록 출력
-if 'game_history' in st.session_state and st.session_state.game_history:
+if st.session_state.game_history:
     st.subheader("📜 역대 게임 결과")
     for game_idx, game in enumerate(st.session_state.game_history):
         st.write(f"### 게임 {game_idx + 1}")
