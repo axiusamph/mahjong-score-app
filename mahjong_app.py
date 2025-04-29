@@ -13,6 +13,9 @@ credentials = Credentials.from_service_account_info(creds_dict, scopes=SCOPE)
 client = gspread.authorize(credentials)
 sheet = client.open(SHEET_NAME).sheet1
 
+# 비밀번호 설정
+CORRECT_PASSWORD = "0916"
+
 # 유틸: 구글 시트에서 기존 데이터 불러오기
 def load_game_history():
     records = sheet.get_all_records()
@@ -25,16 +28,14 @@ def load_game_history():
             pass
     return history
 
-# 유틸: 게임 결과 저장 (한 번만 저장)
+# 유틸: 게임 결과 저장
 def save_game_to_sheet(game_result, game_id):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # 게임 결과는 player_score, player_rank, player_rating을 포함한 리스트 형태로 저장
+    # 게임 결과를 시트에 저장
     sheet.append_row([game_id, str(game_result), timestamp])
 
 # 새로고침 및 세션을 새로 시작할 때마다 시트에서 데이터를 불러오는 로직
 if 'game_history' not in st.session_state:
-    # 게임 기록을 시트에서 불러오고 세션 상태에 저장
     st.session_state.game_history = load_game_history()
     st.session_state.players = {}
     # 누적 계산
@@ -72,7 +73,10 @@ def calculate_rating(rank, score, okka, uma_n, uma_m):
 st.title("🀄 마작 승점 계산기")
 st.markdown("4명 게임 기준, 점수와 순위를 기반으로 승점을 자동 계산합니다.")
 
-# 새 게임 입력
+# 비밀번호 입력 받기
+password = st.text_input("비밀번호를 입력하세요", type="password")
+
+# 새 게임 입력을 위한 UI
 with st.form("game_form"):
     st.subheader("🎮 새 게임 입력")
 
@@ -92,7 +96,8 @@ with st.form("game_form"):
 
     submitted = st.form_submit_button("게임 결과 저장")
 
-if submitted:
+if submitted and password == CORRECT_PASSWORD:
+    # 게임 결과 계산
     game_data = sorted(zip(names, scores), key=lambda x: x[1], reverse=True)
 
     game_result = []
@@ -104,17 +109,23 @@ if submitted:
         st.session_state.players[name]['rating'] += rating
         game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
-    # game_result는 player_score, player_rank, player_rating만 포함된 리스트
-    game_id = len(st.session_state.game_history) + 1  # 새 게임 ID 할당
+    # 새로운 게임 기록 추가
     st.session_state.game_history.append(game_result)
+    
+    # 게임 ID 설정
+    game_id = len(st.session_state.game_history)
 
+    # 게임 결과를 시트에 저장
     save_game_to_sheet(game_result, game_id)
+    
     st.success("✅ 게임 결과가 저장되었습니다.")
+elif submitted and password != CORRECT_PASSWORD:
+    st.error("❌ 비밀번호가 틀렸습니다.")
 
 # 누적 승점 출력
 if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
-    df = pd.DataFrame([
+    df = pd.DataFrame([ 
         {"이름": name, "누적 승점": round(data["rating"], 2)}
         for name, data in st.session_state.players.items()
     ])
