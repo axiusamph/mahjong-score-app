@@ -76,6 +76,9 @@ st.markdown("4명 게임 기준, 점수와 순위를 기반으로 승점을 자�
 with st.form("game_form"):
     st.subheader("🎮 새 게임 입력")
 
+    # 비밀번호 입력란 추가
+    password = st.text_input("비밀번호를 입력하세요", type="password")
+
     okka = st.selectbox("오카 설정", options=["있음", "없음"], index=0)
     uma_n = st.number_input("3등에게 주는 승점 (N)", value=10)
     uma_m = st.number_input("1등에게 주는 승점 (M)", value=30)
@@ -93,28 +96,32 @@ with st.form("game_form"):
     submitted = st.form_submit_button("게임 결과 저장")
 
 if submitted:
-    # 게임 결과 계산
-    game_data = sorted(zip(names, scores), key=lambda x: x[1], reverse=True)
+    # 비밀번호 확인
+    if password != "0916":
+        st.error("❌ 비밀번호가 틀렸습니다.")
+    else:
+        # 게임 결과 계산
+        game_data = sorted(zip(names, scores), key=lambda x: x[1], reverse=True)
 
-    game_result = []
-    for rank, (name, score) in enumerate(game_data, 1):
-        rating = calculate_rating(rank, score, okka, uma_n, uma_m)
-        if name not in st.session_state.players:
-            st.session_state.players[name] = {'score': 0, 'rating': 0}
-        st.session_state.players[name]['score'] += score
-        st.session_state.players[name]['rating'] += rating
-        game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
+        game_result = []
+        for rank, (name, score) in enumerate(game_data, 1):
+            rating = calculate_rating(rank, score, okka, uma_n, uma_m)
+            if name not in st.session_state.players:
+                st.session_state.players[name] = {'score': 0, 'rating': 0}
+            st.session_state.players[name]['score'] += score
+            st.session_state.players[name]['rating'] += rating
+            game_result.append({'name': name, 'score': score, 'rank': rank, 'rating': round(rating, 2)})
 
-    # 새로운 게임 기록 추가
-    st.session_state.game_history.append(game_result)
-    
-    # 게임 ID 설정
-    game_id = len(st.session_state.game_history)
+        # 새로운 게임 기록 추가
+        st.session_state.game_history.append(game_result)
+        
+        # 게임 ID 설정
+        game_id = len(st.session_state.game_history)
 
-    # 게임 결과를 시트에 저장
-    save_game_to_sheet(game_result, game_id)
-    
-    st.success("✅ 게임 결과가 저장되었습니다.")
+        # 게임 결과를 시트에 저장
+        save_game_to_sheet(game_result, game_id)
+        
+        st.success("✅ 게임 결과가 저장되었습니다.")
 
 # 누적 승점 출력
 if st.session_state.players:
