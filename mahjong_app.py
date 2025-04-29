@@ -69,8 +69,8 @@ def calculate_rating(rank, score, okka, uma_n, uma_m):
         return score / 1000
 
 # UI 시작
-st.title("🀄 마작 승점 계산기")
-st.markdown("4명 게임 기준, 점수와 순위를 기반으로 승점을 자동 계산합니다.")
+st.title("🀄 팀선비 마작 대회 기록기")
+st.markdown("점수가 차이가 날 경우 자동으로 순위를 조정합니다.")
 
 # 새 게임 입력
 with st.form("game_form"):
