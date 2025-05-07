@@ -73,27 +73,28 @@ st.title("🀄 팀선비 마작 대회 기록기")
 st.markdown("점수가 차이가 날 경우 자동으로 순위를 조정합니다.")
 
 # 새 게임 입력
-with st.form("game_form"):
-    st.subheader("🎮 새 게임 입력")
-
-    # 비밀번호 입력란 추가
-    password = st.text_input("비밀번호를 입력하세요", type="password")
-
-    okka = st.selectbox("오카 설정", options=["있음", "없음"], index=0)
-    uma_n = st.number_input("3등이 2등에게 주는 승점 (N)", value=10)
-    uma_m = st.number_input("4등이 1등에게 주는 승점 (M)", value=20)
-
-    names, scores = [], []
-    for i in range(4):
-        col1, col2 = st.columns(2)
-        with col1:
-            name = st.text_input(f"{i+1}등 플레이어 이름", key=f"name_{i}")
-        with col2:
-            score = st.number_input(f"{i+1}등 점수", key=f"score_{i}", step=100)
-        names.append(name)
-        scores.append(score)
-
-    submitted = st.form_submit_button("게임 결과 저장")
+with st.expander("게임 입력 폼을 열기 / 닫기", expanded=False):
+    with st.form("game_form"):
+        st.subheader("🎮 새 게임 입력")
+    
+        # 비밀번호 입력란 추가
+        password = st.text_input("비밀번호를 입력하세요", type="password")
+    
+        okka = st.selectbox("오카 설정", options=["있음", "없음"], index=0)
+        uma_n = st.number_input("3등이 2등에게 주는 승점 (N)", value=10)
+        uma_m = st.number_input("4등이 1등에게 주는 승점 (M)", value=20)
+    
+        names, scores = [], []
+        for i in range(4):
+            col1, col2 = st.columns(2)
+            with col1:
+                name = st.text_input(f"{i+1}등 플레이어 이름", key=f"name_{i}")
+            with col2:
+                score = st.number_input(f"{i+1}등 점수", key=f"score_{i}", step=100)
+            names.append(name)
+            scores.append(score)
+    
+        submitted = st.form_submit_button("게임 결과 저장")
 
 if submitted:
     # 비밀번호 확인
