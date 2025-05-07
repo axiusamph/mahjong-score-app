@@ -73,7 +73,7 @@ st.title("🀄 팀선비 마작 대회 기록기")
 st.markdown("문제 발생시 김시유에게 연락 주세요. api exp: 6/28/25")
 
 # 새 게임 입력
-with st.expander("게임 입력 폼을 열기 / 닫기", expanded=False):
+with st.expander("게임 입력", expanded=False):
     with st.form("game_form"):
         st.subheader("🎮 새 게임 입력")
     
