@@ -153,16 +153,16 @@ if st.session_state.players:
             name_style = ""
             rating_style = ""
 
-        # 순위별 색상 (1등, 2등, 3등 금, 은, 동)
-        if row.name == 1:  # 1등
-            name_style = "background-color: #FFD700"  # 금색
-            rating_style = "background-color: #FFD700"
-        elif row.name == 2:  # 2등
-            name_style = "background-color: #C0C0C0"  # 은색
-            rating_style = "background-color: #C0C0C0"
-        elif row.name == 3:  # 3등
-            name_style = "background-color: #CD7F32"  # 동색
-            rating_style = "background-color: #CD7F32"
+        # 순위별 색상 (2등, 3등, 4등 연한 금, 은, 동)
+        if row.name == 1:  # 2등
+            name_style = "background-color: #FFEB99"  # 연한 금색
+            rating_style = "background-color: #FFEB99"
+        elif row.name == 2:  # 3등
+            name_style = "background-color: #D3D3D3"  # 연한 은색
+            rating_style = "background-color: #D3D3D3"
+        elif row.name == 3:  # 4등
+            name_style = "background-color: #E2B97F"  # 연한 동색
+            rating_style = "background-color: #E2B97F"
 
         return [name_style, rating_style]  # 이름, 승점 스타일 적용
 
@@ -172,13 +172,6 @@ if st.session_state.players:
         .format({"누적 승점": "{:.1f}"})
 
     st.dataframe(styled_df, use_container_width=True)
-
-
-
-
-
-
-
 
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
