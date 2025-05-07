@@ -132,8 +132,8 @@ if st.session_state.players:
         {"이름": name, "누적 승점": round(data["rating"], 1)}
         for name, data in st.session_state.players.items()
     ])
-    df.index = range(1, len(df) + 1)
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
+    df.index = range(1, len(df) + 1)
     st.dataframe(df[['이름', '누적 승점']], use_container_width=True)
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
