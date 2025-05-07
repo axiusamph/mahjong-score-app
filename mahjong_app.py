@@ -154,13 +154,13 @@ if st.session_state.players:
             rating_style = ""
 
         # 순위별 색상 (1등, 2등, 3등 금, 은, 동)
-        if row.name == 0:  # 1등
+        if row.name == 1:  # 1등
             name_style = "background-color: #FFD700"  # 금색
             rating_style = "background-color: #FFD700"
-        elif row.name == 1:  # 2등
+        elif row.name == 2:  # 2등
             name_style = "background-color: #C0C0C0"  # 은색
             rating_style = "background-color: #C0C0C0"
-        elif row.name == 2:  # 3등
+        elif row.name == 3:  # 3등
             name_style = "background-color: #CD7F32"  # 동색
             rating_style = "background-color: #CD7F32"
 
