@@ -129,39 +129,31 @@ if submitted:
 if st.session_state.players:
     st.subheader("🏆 누적 승점 결과")
     
+    # 데이터프레임 생성
     df = pd.DataFrame([ 
         {"이름": name, "누적 승점": round(data["rating"], 1)}
         for name, data in st.session_state.players.items()
     ])
     
+    # 승점 기준 정렬
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df.index = range(1, len(df) + 1)
 
-    # 메달 이모지
-    medal = {0: "🥇", 1: "🥈", 2: "🥉"}
+    # 🥇🥈🥉 이모지 삽입
+    medals = {0: "🥇", 1: "🥈", 2: "🥉"}
+    for i in range(min(3, len(df))):
+        df.at[i, "이름"] = f"{medals[i]} {df.at[i, '이름']}"
 
+    # 색상 스타일 지정 (음수 빨강, 양수 초록)
     def style_row(row):
-        rank = row.name
         rating = row["누적 승점"]
-        name = row["이름"]
-
         name_style = ""
         rating_style = ""
 
-        # 랭킹 이모지 추가
-        if rank in medal:
-            row["이름"] = f"{medal[rank]} {name}"
-
-        # 글자색 중심의 스타일링
         if rating > 0:
-            rating_style = "color: #2e8b57"  # SeaGreen
+            rating_style = "color: #2e8b57"  # 초록
         elif rating < 0:
-            rating_style = "color: #d62728"  # Darker red
-
-        # 하위 3명 배경 약간 강조
-        if rank >= len(df) - 3:
-            rating_style += "; background-color: rgba(255, 77, 77, 0.1)"
-            name_style += "; background-color: rgba(255, 77, 77, 0.1)"
+            rating_style = "color: #d62728"  # 빨강
 
         return pd.Series([name_style, rating_style], index=["이름", "누적 승점"])
 
@@ -170,6 +162,7 @@ if st.session_state.players:
         .format({"누적 승점": "{:.1f}"})
 
     st.dataframe(styled_df, use_container_width=True)
+
 
 
 
