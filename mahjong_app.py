@@ -125,7 +125,7 @@ if submitted:
         
         st.success("✅ 게임 결과가 저장되었습니다.")
 
-# 누적 승점 출력
+#누적 승점 출력
 if st.session_state.players:
     st.subheader("🏆 누적 승점 결과")
 
@@ -165,10 +165,8 @@ if st.session_state.players:
         .format({"누적 승점": "{:.1f}"})\
         .set_properties(subset=["누적 승점"], **{"text-align": "left"})
 
-    # 표 출력
-    st.dataframe(styled_df, use_container_width=True)
-
-
+    # st.table을 사용하여 스타일을 적용한 표 출력
+    st.table(styled_df)
 
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
