@@ -136,29 +136,18 @@ if st.session_state.players:
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df.index = range(1, len(df) + 1)
 
-    # 스타일 함수 정의
-    def style_df(row):
-        styles = []
-        for col in row.index:
-            if col == "이름":
-                styles.append("background-color: #ffcccc")  # 이름 열
-            elif col == "누적 승점" and row["누적 승점"] < 0:
-                styles.append("background-color: #ff9999")  # 음수 승점
-            else:
-                styles.append("")
-        return styles
+    # 각 셀에 스타일 적용 (열마다 따로 적용)
+    def highlight_name(row):
+        if row["누적 승점"] < 0:
+            return ["background-color: #ffcccc", ""]  # 이름 컬럼만 칠함
+        return ["", ""]
 
     styled_df = df.style\
-        .apply(style_df, axis=1)\
-        .format({"누적 승점": "{:.1f}"})  # 소수점 1자리로 고정
-
-    # 인덱스 스타일링도 적용 (인덱스는 따로)
-    styled_df = styled_df.set_table_styles([
-        {"selector": "thead th.row_heading", "props": [("background-color", "#ffcccc")]},
-        {"selector": "tbody th", "props": [("background-color", "#ffcccc")]}
-    ])
+        .apply(highlight_name, axis=1, subset=["이름", "누적 승점"])\
+        .format({"누적 승점": "{:.1f}"})
 
     st.dataframe(styled_df, use_container_width=True)
+
 
 
 
