@@ -140,12 +140,8 @@ if st.session_state.players:
 
     # 🥇🥈🥉 이모지 추가 (iloc 사용)
     medals = {0: "🥇", 1: "🥈", 2: "🥉"}
-    names = df["이름"].tolist()
-    for i in medals:
-        if i < len(names):
-            names[i] = f"{names[i]} {medals[i]}"
-    df["이름"] = names  # 이름 열 갱신
-
+    df["이름"] = [f"{row['이름']} {medals[i]}" if i in medals else row["이름"] for i, row in df.iterrows()]
+    
     # 스타일 함수 정의
     def style_row(row):
         rating = row["누적 승점"]
