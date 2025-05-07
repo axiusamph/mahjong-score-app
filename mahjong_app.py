@@ -132,6 +132,7 @@ if st.session_state.players:
         {"이름": name, "누적 승점": round(data["rating"], 1)}
         for name, data in st.session_state.players.items()
     ])
+    df.index = range(1, len(df) + 1)
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     st.dataframe(df[['이름', '누적 승점']], use_container_width=True)
 
@@ -147,4 +148,5 @@ if st.session_state.game_history:
         st.write(f"### 게임 {game_idx + 1}")
         df = pd.DataFrame(game)
         df = df.drop(columns=["rank"])
+        df.index = range(1, len(df) + 1)
         st.dataframe(df, use_container_width=True)
