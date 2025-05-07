@@ -138,11 +138,14 @@ if st.session_state.players:
     # 음수일 경우 배경색 빨간색
     def highlight_negative(val):
         if val < 0:
-            return "background-color: #ffcccc"  # 연한 빨간색
+            return "background-color: #ffcccc"
         return ""
 
-    styled_df = df.style.applymap(highlight_negative, subset=["누적 승점"])
+    styled_df = df.style\
+        .applymap(highlight_negative, subset=["누적 승점"])\
+        .format({"누적 승점": "{:.1f}"})  # 소수점 1자리
     st.dataframe(styled_df, use_container_width=True)
+
 
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
