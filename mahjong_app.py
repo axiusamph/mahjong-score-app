@@ -146,4 +146,5 @@ if st.session_state.game_history:
     for game_idx, game in enumerate(st.session_state.game_history):
         st.write(f"### 게임 {game_idx + 1}")
         df = pd.DataFrame(game)
+        df = df.drop(columns=["rank"])
         st.dataframe(df, use_container_width=True)
