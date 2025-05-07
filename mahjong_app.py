@@ -165,13 +165,13 @@ if st.session_state.players:
             rating_style = "background-color: #CD7F32"
         
         # 마지막 3명은 찐한 빨간색
-        if row.name == len(df) - 1:  # 마지막 1명
+        if row.name == len(df) - 0:  # 마지막 1명
             name_style = "background-color: #ff4d4d"  # 찐한 빨간색
             rating_style = "background-color: #ff4d4d"
-        elif row.name == len(df) - 2:  # 마지막 2명
+        elif row.name == len(df) - 1:  # 마지막 2명
             name_style = "background-color: #ff4d4d"  # 찐한 빨간색
             rating_style = "background-color: #ff4d4d"
-        elif row.name == len(df) - 3:  # 마지막 3명
+        elif row.name == len(df) - 2:  # 마지막 3명
             name_style = "background-color: #ff4d4d"  # 찐한 빨간색
             rating_style = "background-color: #ff4d4d"
 
