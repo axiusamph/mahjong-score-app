@@ -80,8 +80,8 @@ with st.form("game_form"):
     password = st.text_input("비밀번호를 입력하세요", type="password")
 
     okka = st.selectbox("오카 설정", options=["있음", "없음"], index=0)
-    uma_n = st.number_input("3등에게 주는 승점 (N)", value=10)
-    uma_m = st.number_input("1등에게 주는 승점 (M)", value=20)
+    uma_n = st.number_input("3등이 2등에게 주는 승점 (N)", value=10)
+    uma_m = st.number_input("4등이 1등에게 주는 승점 (M)", value=20)
 
     names, scores = [], []
     for i in range(4):
