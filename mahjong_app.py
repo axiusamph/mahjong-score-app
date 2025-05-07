@@ -142,7 +142,7 @@ if st.session_state.players:
     medals = {0: "🥇", 1: "🥈", 2: "🥉"}
     for i in medals:
         if i < len(df):
-            df.at[i, "이름"] = f"{medals[i]} {df.at[i, '이름']}"
+            df.at[i, "이름"] = f"{df.at[i, '이름']} {medals[i]}"
 
     # 스타일 함수 정의
     def style_row(row):
