@@ -127,7 +127,7 @@ if submitted:
 if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
     df = pd.DataFrame([ 
-        {"이름": name, "누적 승점": round(data["rating"], 2)}
+        {"이름": name, "누적 승점": round(data["rating"], 1)}
         for name, data in st.session_state.players.items()
     ])
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
