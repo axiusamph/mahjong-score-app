@@ -129,25 +129,50 @@ if submitted:
 if st.session_state.players:
     st.subheader("📊 누적 승점 결과")
     
+    # 데이터프레임 생성
     df = pd.DataFrame([ 
         {"이름": name, "누적 승점": round(data["rating"], 1)}
         for name, data in st.session_state.players.items()
     ])
+    
+    # 누적 승점에 따라 정렬
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df.index = range(1, len(df) + 1)
-
-    # 음수일 경우 이름과 누적 승점 모두 배경색 설정
+    
+    # 스타일링 함수 정의
     def highlight_row(row):
-        if row["누적 승점"] < 0:
-            return ["background-color: #ffcccc", "background-color: #ffcccc"]
+        # 양수 승점은 초록색
+        if row["누적 승점"] > 0:
+            name_style = "background-color: #d4edda"  # 연한 초록색
+            rating_style = "background-color: #d4edda"
+        # 음수 승점은 빨간색
+        elif row["누적 승점"] < 0:
+            name_style = "background-color: #ffcccc"  # 연한 빨간색
+            rating_style = "background-color: #ffcccc"
         else:
-            return ["", ""]
+            name_style = ""
+            rating_style = ""
 
+        # 순위별 색상 (1등, 2등, 3등 금, 은, 동)
+        if row.name == 0:  # 1등
+            name_style = "background-color: #FFD700"  # 금색
+            rating_style = "background-color: #FFD700"
+        elif row.name == 1:  # 2등
+            name_style = "background-color: #C0C0C0"  # 은색
+            rating_style = "background-color: #C0C0C0"
+        elif row.name == 2:  # 3등
+            name_style = "background-color: #CD7F32"  # 동색
+            rating_style = "background-color: #CD7F32"
+
+        return [name_style, rating_style]  # 이름, 승점 스타일 적용
+
+    # 스타일 적용
     styled_df = df.style\
         .apply(highlight_row, axis=1, subset=["이름", "누적 승점"])\
         .format({"누적 승점": "{:.1f}"})
 
     st.dataframe(styled_df, use_container_width=True)
+
 
 
 
