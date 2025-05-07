@@ -141,11 +141,11 @@ if st.session_state.players:
     
     # 스타일링 함수 정의
     def highlight_row(row):
-        # 양수 승점은 더 채도가 높은 초록색
+        # 양수 승점은 초록색
         if row["누적 승점"] > 0:
-            name_style = "background-color: ##77f777"  
-            rating_style = "background-color: ##77f777"
-        # 음수 승점은 더 채도가 높은 빨간색
+            name_style = "background-color: #77f777"  
+            rating_style = "background-color: #77f777"
+        # 음수 승점은 빨간색
         elif row["누적 승점"] < 0:
             name_style = "background-color: #ff6666" 
             rating_style = "background-color: #ff6666"
