@@ -143,11 +143,11 @@ if st.session_state.players:
     def highlight_row(row):
         # 양수 승점은 더 채도가 높은 초록색
         if row["누적 승점"] > 0:
-            name_style = "background-color: #b5f5b5"  # 더 밝고 채도 높은 초록색
-            rating_style = "background-color: #b5f5b5"
+            name_style = "background-color: ##77f777"  
+            rating_style = "background-color: ##77f777"
         # 음수 승점은 더 채도가 높은 빨간색
         elif row["누적 승점"] < 0:
-            name_style = "background-color: #ff6666"  # 더 찐한 빨간색
+            name_style = "background-color: #ff6666" 
             rating_style = "background-color: #ff6666"
         else:
             name_style = ""
@@ -155,24 +155,24 @@ if st.session_state.players:
 
         # 순위별 색상 (2등, 3등, 4등 금, 은, 동)
         if row.name == 1:  # 2등
-            name_style = "background-color: #FFD700"  # 찐 금색
+            name_style = "background-color: #FFD700" 
             rating_style = "background-color: #FFD700"
         elif row.name == 2:  # 3등
-            name_style = "background-color: #C0C0C0"  # 찐 은색
+            name_style = "background-color: #C0C0C0" 
             rating_style = "background-color: #C0C0C0"
         elif row.name == 3:  # 4등
-            name_style = "background-color: #CD7F32"  # 찐 동색
+            name_style = "background-color: #CD7F32"
             rating_style = "background-color: #CD7F32"
         
         # 마지막 3명은 찐한 빨간색
         if row.name == len(df) - 0:  # 마지막 1명
-            name_style = "background-color: #ff4d4d"  # 찐한 빨간색
+            name_style = "background-color: #ff4d4d" 
             rating_style = "background-color: #ff4d4d"
         elif row.name == len(df) - 1:  # 마지막 2명
-            name_style = "background-color: #ff4d4d"  # 찐한 빨간색
+            name_style = "background-color: #ff4d4d" 
             rating_style = "background-color: #ff4d4d"
         elif row.name == len(df) - 2:  # 마지막 3명
-            name_style = "background-color: #ff4d4d"  # 찐한 빨간색
+            name_style = "background-color: #ff4d4d" 
             rating_style = "background-color: #ff4d4d"
 
         return [name_style, rating_style]  # 이름, 승점 스타일 적용
