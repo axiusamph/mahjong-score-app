@@ -134,7 +134,16 @@ if st.session_state.players:
     ])
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
     df.index = range(1, len(df) + 1)
-    st.dataframe(df[['이름', '누적 승점']], use_container_width=True)
+
+    # 음수일 경우 배경색 빨간색
+    def highlight_negative(val):
+        if val < 0:
+            return "background-color: #ffcccc"  # 연한 빨간색
+        return ""
+
+    styled_df = df.style.applymap(highlight_negative, subset=["누적 승점"])
+    st.dataframe(styled_df, use_container_width=True)
+
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
 st.markdown('<p style="color: gray; font-size: 12px;">오카 있을시 반환점 30000, 없을시 반환점 25000입니다.  <br>오카란, 각자 반환점에서 일정 수준을 걷은 만큼 초기 점수(25000)를 받을 때, 각자에게 걷은 점수(20000)를 끝나고 모두 1등에게 주는 것입니다.  <br>우마는 N/M 우마시 승점을 3등이 2등에게 N만큼, 4등이 1등에게 M만큼 줍니다.</p>', unsafe_allow_html=True)
