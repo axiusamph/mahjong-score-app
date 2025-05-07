@@ -70,7 +70,7 @@ def calculate_rating(rank, score, okka, uma_n, uma_m):
 
 # UI 시작
 st.title("🀄 팀선비 마작 대회 기록기")
-st.markdown("점수가 차이가 날 경우 자동으로 순위를 조정합니다.")
+st.markdown("문제 발생시 김시유에게 연락 주세요. api exp: 6/28/25")
 
 # 새 게임 입력
 with st.expander("게임 입력 폼을 열기 / 닫기", expanded=False):
@@ -95,6 +95,7 @@ with st.expander("게임 입력 폼을 열기 / 닫기", expanded=False):
             scores.append(score)
     
         submitted = st.form_submit_button("게임 결과 저장")
+        st.markdown("점수가 같지 않다면 자동으로 등수를 조정합니다.")
 
 if submitted:
     # 비밀번호 확인
