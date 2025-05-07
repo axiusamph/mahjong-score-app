@@ -141,28 +141,39 @@ if st.session_state.players:
     
     # 스타일링 함수 정의
     def highlight_row(row):
-        # 양수 승점은 초록색
+        # 양수 승점은 더 채도가 높은 초록색
         if row["누적 승점"] > 0:
-            name_style = "background-color: #d4edda"  # 연한 초록색
-            rating_style = "background-color: #d4edda"
-        # 음수 승점은 빨간색
+            name_style = "background-color: #b5f5b5"  # 더 밝고 채도 높은 초록색
+            rating_style = "background-color: #b5f5b5"
+        # 음수 승점은 더 채도가 높은 빨간색
         elif row["누적 승점"] < 0:
-            name_style = "background-color: #ffcccc"  # 연한 빨간색
-            rating_style = "background-color: #ffcccc"
+            name_style = "background-color: #ff6666"  # 더 찐한 빨간색
+            rating_style = "background-color: #ff6666"
         else:
             name_style = ""
             rating_style = ""
 
-        # 순위별 색상 (2등, 3등, 4등 연한 금, 은, 동)
+        # 순위별 색상 (2등, 3등, 4등 금, 은, 동)
         if row.name == 1:  # 2등
-            name_style = "background-color: #FFEB99"  # 연한 금색
-            rating_style = "background-color: #FFEB99"
+            name_style = "background-color: #FFD700"  # 찐 금색
+            rating_style = "background-color: #FFD700"
         elif row.name == 2:  # 3등
-            name_style = "background-color: #D3D3D3"  # 연한 은색
-            rating_style = "background-color: #D3D3D3"
+            name_style = "background-color: #C0C0C0"  # 찐 은색
+            rating_style = "background-color: #C0C0C0"
         elif row.name == 3:  # 4등
-            name_style = "background-color: #E2B97F"  # 연한 동색
-            rating_style = "background-color: #E2B97F"
+            name_style = "background-color: #CD7F32"  # 찐 동색
+            rating_style = "background-color: #CD7F32"
+        
+        # 마지막 3명은 찐한 빨간색
+        if row.name == len(df) - 1:  # 마지막 1명
+            name_style = "background-color: #ff4d4d"  # 찐한 빨간색
+            rating_style = "background-color: #ff4d4d"
+        elif row.name == len(df) - 2:  # 마지막 2명
+            name_style = "background-color: #ff4d4d"  # 찐한 빨간색
+            rating_style = "background-color: #ff4d4d"
+        elif row.name == len(df) - 3:  # 마지막 3명
+            name_style = "background-color: #ff4d4d"  # 찐한 빨간색
+            rating_style = "background-color: #ff4d4d"
 
         return [name_style, rating_style]  # 이름, 승점 스타일 적용
 
@@ -172,6 +183,7 @@ if st.session_state.players:
         .format({"누적 승점": "{:.1f}"})
 
     st.dataframe(styled_df, use_container_width=True)
+
 
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
