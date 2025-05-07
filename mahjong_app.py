@@ -129,18 +129,20 @@ if submitted:
 if st.session_state.players:
     st.subheader("🏆 누적 승점 결과")
 
-    # DataFrame 생성
+    # 데이터 생성
     df = pd.DataFrame([
         {"이름": name, "누적 승점": round(data["rating"], 1)}
         for name, data in st.session_state.players.items()
     ])
+
+    # 정렬
     df = df.sort_values(by="누적 승점", ascending=False).reset_index(drop=True)
-    df.index = range(1, len(df) + 1)
-    
-    medals = {1: "🥇", 2: "🥈", 3: "🥉"}
-    for idx in df.index:
-        if idx in medals:
-            df.loc[idx, "이름"] = f"{medals[idx]} {df.loc[idx, '이름']}"
+
+    # 🥇🥈🥉 이모지 추가 (iloc 사용)
+    medals = {0: "🥇", 1: "🥈", 2: "🥉"}
+    for i in medals:
+        if i < len(df):
+            df.at[i, "이름"] = f"{medals[i]} {df.at[i, '이름']}"
 
     # 스타일 함수 정의
     def style_row(row):
@@ -155,11 +157,17 @@ if st.session_state.players:
 
         return pd.Series([name_style, rating_style], index=["이름", "누적 승점"])
 
-    styled_df = df.style\
+    # 인덱스는 표시용으로 1부터 시작
+    display_df = df.copy()
+    display_df.index = range(1, len(display_df) + 1)
+
+    # 스타일 적용
+    styled_df = display_df.style\
         .apply(style_row, axis=1)\
         .format({"누적 승점": "{:.1f}"})
 
     st.dataframe(styled_df, use_container_width=True)
+
 
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
