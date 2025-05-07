@@ -75,7 +75,7 @@ st.markdown("문제 발생시 김시유에게 연락 주세요. api exp: 6/28/25
 # 새 게임 입력
 with st.expander("게임 입력", expanded=False):
     with st.form("game_form"):
-        st.subheader("🎮 새 게임 입력")
+        st.subheader("✒️ 새 게임 입력")
     
         # 비밀번호 입력란 추가
         password = st.text_input("비밀번호를 입력하세요", type="password")
@@ -127,7 +127,7 @@ if submitted:
 
 # 누적 승점 출력
 if st.session_state.players:
-    st.subheader("📊 누적 승점 결과")
+    st.subheader("🏆 누적 승점 결과")
     
     # 데이터프레임 생성
     df = pd.DataFrame([ 
