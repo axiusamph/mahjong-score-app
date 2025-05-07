@@ -134,6 +134,8 @@ if st.session_state.players:
     df["순위"] = df.index + 1
     st.dataframe(df[['순위', '이름', '누적 승점']], use_container_width=True)
 
+st.markdown("계산 방식은 \'점수 - 반환점 (+ 1등의 경우 오카) / 1000 + 우마\' 이며, \n 오카 있을시 반환점 30000, 없을시 반환점 25000입니다.")
+
 # 게임 기록 출력
 if st.session_state.game_history:
     st.subheader("📜 역대 게임 결과")
