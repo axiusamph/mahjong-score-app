@@ -69,7 +69,7 @@ def calculate_rating(rank, score, okka, uma_n, uma_m):
         return score / 1000
 
 # UI 시작
-st.title("🀄 팀선비 마작 대회 기록기")
+st.title("🀄 팀선비 마작 대회 '녹일색' 기록기")
 st.markdown("문제 발생시 김시유에게 연락 주세요. api exp: 6/28/25")
 
 # 새 게임 입력
