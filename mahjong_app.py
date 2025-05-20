@@ -168,8 +168,6 @@ if st.session_state.players:
 
 
 st.markdown('<p style="color: gray; font-size: 14px;">계산 방식: {점수 - 반환점 (+ 1등의 경우 오카)} / 1000 + 우마 보정</p>', unsafe_allow_html=True)
-st.markdown('<p style="color: gray; font-size: 12px;">오카 있을시 반환점 30000, 없을시 반환점 25000입니다.  <br>오카란, 각자 반환점에서 일정 수준을 걷은 만큼 초기 점수(25000)를 받을 때, 각자에게 걷은 점수(20000)를 끝나고 모두 1등에게 주는 것입니다.  <br>우마는 N/M 우마시 승점을 3등이 2등에게 N만큼, 4등이 1등에게 M만큼 줍니다.</p>', unsafe_allow_html=True)
-st.markdown('<p style="color: gray; font-size: 14px;">2025년 1학기 팀선비 마작대회는 입력 초기 설정대로입니다.  <br>즉, 최종 점수를 1000으로 나눈 이후 1등 +10 / 2등 -20 / 3등 -40 / 4등 -50 이 승점입니다.<br>이 때 25000을 기준으로 보정치는 +35 / +5 / -15 / -25 입니다. 즉 톱 마작이니 1등을 노리는 것이 좋습니다! 작혼과 달리 공격적으로 플레이해 보세요.</p>', unsafe_allow_html=True)
 
 
 # 게임 기록 출력
